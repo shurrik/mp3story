@@ -41,7 +41,7 @@ public class LocalMusicAdapter  extends ArrayAdapter<Map>{
             courseName.setText(map.get("courseName").toString());
             String url = StaticVariable.IMG_ROOT+ "/" + map.get("courseCover").toString();
             imageLoader.loadDrawable(url, courseCover);*/
-            title.setText(String.valueOf(position));
+            title.setText(""+position);
             viewMap.put(position, rowView);
         }
         return rowView;
