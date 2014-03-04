@@ -57,9 +57,9 @@ public class LocalMusicService extends Service implements OnCompletionListener {
 	public void onStart(Intent intent, int startId) {
 		
 		// 播放，暂停，前，后一首
-		/*int _id = intent.getIntExtra("_id", -1);// 获取ID的数据
-*/		
-		int _id = 52566;
+		int _id = intent.getIntExtra("_id", -1);// 获取ID的数据
+		
+		//int _id = 52566;
 		if (_id != -1) {
 			if (id != _id) {
 				id = _id;

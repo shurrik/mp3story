@@ -71,12 +71,26 @@ public class LocalMusicActivity extends Activity{
 		listView.setAdapter(adapter);	
 		listView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+			public void onItemClick(AdapterView<?> arg0, View arg1, int position,
 					long arg3) {
 				// TODO Auto-generated method stub
-				Intent intent = new Intent(LocalMusicActivity.this,PlayMusicActivity.class);
-				startActivity(intent);
+				/*Intent intent = new Intent(LocalMusicActivity.this,PlayMusicActivity.class);
+				startActivity(intent);*/
+				playMusic(position);
 			}
 		});
+	}
+	
+	// 播放音乐方法
+	public void playMusic(int position) {
+		Intent intent = new Intent(LocalMusicActivity.this,
+				PlayMusicActivity.class);
+		intent.putExtra("_ids", _ids);
+		intent.putExtra("_titles", _titles);
+		intent.putExtra("_artists", _artists);
+		intent.putExtra("position", position);
+		startActivity(intent);
+		finish();
+
 	}
 }
