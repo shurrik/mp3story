@@ -12,15 +12,16 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.provider.MediaStore;
+import android.util.Log;
 
 public class LocalMusicService extends Service implements OnCompletionListener {
 	private static final int PLAYING = 1;// 定义该怎么对音乐操作的常量,如播放是1
 	private static final int PAUSE = 2;// 暂停事件是2
 	private static final int STOP = 3;// 停止事件是3
 	private static final int PROGRESS_CHANGE = 4;// 进度条改变事件设为4
-	private static final String MUSIC_CURRENT = "com.music.currentTime";
-	private static final String MUSIC_DURATION = "com.music.duration";
-	private static final String MUSIC_NEXT = "com.music.next";
+	private static final String MUSIC_CURRENT = "com.shurrik.mp3story.currentTime";
+	private static final String MUSIC_DURATION = "com.shurrik.mp3story.duration";
+	private static final String MUSIC_NEXT = "com.shurrik.mp3story.next";
 	private MediaPlayer mp;// MediaPlayer对象
 	private Handler handler;// handler对象
 	private Uri uri = null;// 路径地址
@@ -59,7 +60,6 @@ public class LocalMusicService extends Service implements OnCompletionListener {
 		// 播放，暂停，前，后一首
 		int _id = intent.getIntExtra("_id", -1);// 获取ID的数据
 		
-		//int _id = 52566;
 		if (_id != -1) {
 			if (id != _id) {
 				id = _id;
@@ -136,6 +136,7 @@ public class LocalMusicService extends Service implements OnCompletionListener {
 	 * 初始化服务
 	 */
 	private void init() {
+		Log.i("============", "init");
 		final Intent intent = new Intent();
 		intent.setAction(MUSIC_CURRENT);
 		handler = new Handler() {

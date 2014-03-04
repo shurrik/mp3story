@@ -1,11 +1,18 @@
 package com.shurrik.mp3story.ui.activity;
 
+import java.util.Iterator;
+
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.Toast;
 
 import com.shurrik.mp3story.R;
@@ -27,7 +34,15 @@ public class PlayMusicActivity extends Activity{
 
 	private static final int STATE_PLAY = 1;// 播放状态设为1,表示播放状态
 	private static final int STATE_PAUSE = 2;// 播放状态设为2，表示暂停状态
+	private SeekBar seekbar = null;// 歌曲进度
 	
+	private static final String MUSIC_CURRENT = "com.shurrik.mp3story.currentTime";
+	private static final String MUSIC_DURATION = "com.shurrik.mp3story.duration";
+	private static final String MUSIC_NEXT = "com.shurrik.mp3story.next";
+	private static final String MUSIC_UPDATE = "com.shurrik.mp3story.update";
+	
+	private int currentPosition;// 当前播放位置
+	private int duration;// 总时间
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -40,6 +55,7 @@ public class PlayMusicActivity extends Activity{
 		_titles = bundle.getStringArray("_titles");// 音乐播放标题
 		_artists = bundle.getStringArray("_artists");// 传过来的艺术家，歌名一个都不允许遗漏，否则空指针是必须的
 		ShowPlayBtn();// 显示或者说监视播放按钮事件
+		ShowSeekBar();// 进度条
 	}
 	
     //显示各个按钮并做监视
@@ -64,24 +80,94 @@ public class PlayMusicActivity extends Activity{
 
 	}
 	
+	private void ShowSeekBar() {
+		seekbar = (SeekBar) findViewById(R.id.seekbar);
+		seekbar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+
+			
+			public void onStopTrackingTouch(SeekBar seekBar) {
+				play();
+
+			}
+
+			
+			public void onStartTrackingTouch(SeekBar seekBar) {
+				pause();
+
+			}
+
+			
+			public void onProgressChanged(SeekBar seekBar, int progress,
+					boolean fromUser) {
+				if (fromUser) {
+					seekbar_change(progress);
+				}
+
+			}
+		});
+
+	}
+	
+	// 进度条改变
+	protected void seekbar_change(int progress) {
+		Intent intent = new Intent();
+		intent.setAction("com.shurrik.mp3story.ui.service.LocalMusicService");
+		intent.putExtra("op", PROGRESS_CHANGE);
+		intent.putExtra("progress", progress);
+		startService(intent);
+	}
+	
 	@Override
 	protected void onStart() {
 		// TODO Auto-generated method stub
 		super.onStart();
+		setup();//初始化
+		play();
 		
-		new Thread(){
+/*		new Thread(){
 
 			public void run() {
-/*				Intent intent = new Intent();
+				Intent intent = new Intent();
 				intent.putExtra("_id", _ids[position]);
 				intent.setAction("com.shurrik.mp3story.ui.service.LocalMusicService");
 				intent.putExtra("op", PLAY);
-				startService(intent);*/
+				startService(intent);
 				 play();
 			};
-		}.start();
+		}.start();*/
 	}
 	
+	// 准备
+	private void setup() {
+		loadclip();
+		init();
+	}
+	
+	// 初始化服务
+	private void init() {
+		IntentFilter filter = new IntentFilter();
+		filter.addAction(MUSIC_CURRENT);
+		filter.addAction(MUSIC_DURATION);
+		filter.addAction(MUSIC_NEXT);
+		filter.addAction(MUSIC_UPDATE);
+		registerReceiver(musicreceiver, filter);
+
+	}
+	
+	// 截取标题，歌词，歌名
+	private void loadclip() {
+		seekbar.setProgress(0);
+		int pos = _ids[position];
+/*		name.setText(_titles[position]);
+		artist.setText(_artists[position]);*/
+		Intent intent = new Intent();
+		intent.putExtra("_id", pos);
+		intent.putExtra("_titles", _titles);
+		intent.putExtra("position", position);
+		intent.setAction("com.shurrik.mp3story.ui.service.LocalMusicService");
+		startService(intent);
+
+	}
 	
 	// 播放音乐
 	protected void play() {
@@ -89,7 +175,7 @@ public class PlayMusicActivity extends Activity{
 		playbtn.setImageResource(R.drawable.pause_button);
 		Intent intent = new Intent();
 		intent.putExtra("_id", _ids[position]);
-		intent.setAction("org.music.service.LocalMusicService");
+		intent.setAction("com.shurrik.mp3story.ui.service.LocalMusicService");
 		intent.putExtra("op", PLAY);
 		startService(intent);
 
@@ -100,9 +186,50 @@ public class PlayMusicActivity extends Activity{
 		flag = PAUSE;
 		playbtn.setImageResource(R.drawable.play_button);
 		Intent intent = new Intent();
-		intent.setAction("org.music.service.LocalMusicService");
+		intent.setAction("com.shurrik.mp3story.ui.service.LocalMusicService");
 		intent.putExtra("op", PAUSE);
 		startService(intent);
 
 	}
+	
+	private BroadcastReceiver musicreceiver = new BroadcastReceiver() {
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			String action = intent.getAction();
+			if (action.equals(MUSIC_CURRENT)) {
+				currentPosition = intent.getExtras().getInt("currentTime");// 获得当前播放位置
+				//playtime.setText(toTime(currentPosition));// 初始化播放时间
+				seekbar.setProgress(currentPosition);// 初始化播放进度位置
+				/*Iterator<Integer> iterator = lrc_map.keySet().iterator();
+				while (iterator.hasNext()) {
+					Object o = iterator.next();
+					LRCbean val = lrc_map.get(o);
+					if (val != null) {
+
+						if (currentPosition > val.getBeginTime()
+								&& currentPosition < val.getBeginTime()
+										+ val.getLineTime()) {
+							lrcText.setText(val.getLrcBody());
+							break;
+						}
+					}
+				}*/
+
+			} else if (action.equals(MUSIC_DURATION)) {
+				duration = intent.getExtras().getInt("duration");// 获取总时间
+				seekbar.setMax(duration);// 进度条设置最大值（传总时间）
+				//durationTime.setText(toTime(duration));// 总时间设置转换的函数
+			}
+/*			 else if (action.equals(MUSIC_UPDATE)) {
+				position = intent.getExtras().getInt("position");
+				setup();
+			}*/
+			/* else if (action.equals(MUSIC_NEXT)) {
+				System.out.println("音乐继续播放下一首");
+				nextOne();
+*/
+
+		}
+	};
 }

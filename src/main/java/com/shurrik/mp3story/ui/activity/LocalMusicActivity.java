@@ -90,7 +90,7 @@ public class LocalMusicActivity extends Activity{
 		intent.putExtra("_artists", _artists);
 		intent.putExtra("position", position);
 		startActivity(intent);
-		finish();
+		//finish();
 
 	}
 }
