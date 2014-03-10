@@ -1,7 +1,5 @@
 package com.shurrik.mp3story.ui.activity;
 
-import java.util.Iterator;
-
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -13,7 +11,7 @@ import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import com.shurrik.mp3story.R;
 
@@ -23,7 +21,12 @@ public class PlayMusicActivity extends Activity{
 	private String _titles[] = null;// 临时存放标题的数组
 	private String _artists[] = null;// 临时存放艺术家的数组
 	private int position;// 位置
+	
+	
 	private ImageButton playbtn = null;// 播放按钮
+	private TextView playTitle;
+	private TextView playArtist;
+	
 	private int flag;// 标记
 	
 	private static final int PLAY = 1;// 定义播放状态
@@ -48,12 +51,19 @@ public class PlayMusicActivity extends Activity{
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.play_music);
+		
 		Intent intent = this.getIntent();// 获取列表的Intent对象
 		Bundle bundle = intent.getExtras();// Bundle存取数据，那么在播放界面提取数据喽
 		_ids = bundle.getIntArray("_ids");// 歌名数组的ID，用来临时保存音乐的ID
 		position = bundle.getInt("position");// 音乐播放位置
 		_titles = bundle.getStringArray("_titles");// 音乐播放标题
 		_artists = bundle.getStringArray("_artists");// 传过来的艺术家，歌名一个都不允许遗漏，否则空指针是必须的
+		
+		playTitle = (TextView) this.findViewById(R.id.play_title);
+		playTitle.setText(_titles[position]);
+		
+		playArtist = (TextView) this.findViewById(R.id.play_artist);
+		playArtist.setText(_artists[position]);
 		ShowPlayBtn();// 显示或者说监视播放按钮事件
 		ShowSeekBar();// 进度条
 	}

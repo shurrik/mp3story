@@ -15,6 +15,19 @@
         android:paddingRight="5dip" >
     </SeekBar>
 
+    <TextView
+        android:id="@+id/play_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="170dip"
+        android:layout_gravity="center" />
+    <TextView
+        android:id="@+id/play_artist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="140dip"
+        android:layout_gravity="center" />    
+
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
