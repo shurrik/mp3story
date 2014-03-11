@@ -35,7 +35,14 @@
         android:layout_marginTop="210dip"
         android:layout_weight="1"
         android:orientation="horizontal" >
-
+        <ImageButton
+            android:id="@+id/lastBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:background="#00000000"
+            android:src="@drawable/last_button" >
+        </ImageButton>
         <ImageButton
             android:id="@+id/playBtn"
             android:layout_width="wrap_content"
@@ -44,6 +51,14 @@
             android:background="#00000000"
             android:src="@drawable/play_button" >
         </ImageButton>
+        <ImageButton
+            android:id="@+id/nextBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:background="#00000000"
+            android:src="@drawable/next_button" >
+        </ImageButton>        
     </RelativeLayout>
 
 </FrameLayout>

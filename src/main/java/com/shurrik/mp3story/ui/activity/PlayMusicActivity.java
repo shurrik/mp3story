@@ -24,6 +24,8 @@ public class PlayMusicActivity extends Activity{
 	
 	
 	private ImageButton playbtn = null;// 播放按钮
+	private ImageButton lastbtn = null;// 上一个
+	private ImageButton nextbtn = null;// 下一个
 	private TextView playTitle;
 	private TextView playArtist;
 	
@@ -59,12 +61,9 @@ public class PlayMusicActivity extends Activity{
 		_titles = bundle.getStringArray("_titles");// 音乐播放标题
 		_artists = bundle.getStringArray("_artists");// 传过来的艺术家，歌名一个都不允许遗漏，否则空指针是必须的
 		
-		playTitle = (TextView) this.findViewById(R.id.play_title);
-		playTitle.setText(_titles[position]);
-		
-		playArtist = (TextView) this.findViewById(R.id.play_artist);
-		playArtist.setText(_artists[position]);
 		ShowPlayBtn();// 显示或者说监视播放按钮事件
+		showPlayLast();
+		showPlayNext();
 		ShowSeekBar();// 进度条
 	}
 	
@@ -88,6 +87,32 @@ public class PlayMusicActivity extends Activity{
 			}
 		});
 
+	}
+	
+	private void showPlayLast()
+	{
+		lastbtn = (ImageButton) findViewById(R.id.lastBtn);
+		//Toast.makeText(this, "flag:"+flag, 3).show();
+		lastbtn.setOnClickListener(new OnClickListener() {
+
+			public void onClick(View v) {
+
+				playLast();
+			}
+		});				
+	}
+	
+	private void showPlayNext()
+	{
+		nextbtn = (ImageButton) findViewById(R.id.nextBtn);
+		//Toast.makeText(this, "flag:"+flag, 3).show();
+		nextbtn.setOnClickListener(new OnClickListener() {
+
+			public void onClick(View v) {
+
+				playNext();
+			}
+		});				
 	}
 	
 	private void ShowSeekBar() {
@@ -147,10 +172,40 @@ public class PlayMusicActivity extends Activity{
 		}.start();*/
 	}
 	
+	// 停止播放音乐
+	private void stop() {
+		Intent intent = new Intent();
+		intent.setAction("org.music.service.LocalMusicService");
+		intent.putExtra("op", STOP);
+		startService(intent);
+	}
+	
 	// 准备
 	private void setup() {
 		loadclip();
 		init();
+	}
+	
+	protected void playNext() {
+		if (position == _ids.length - 1) {
+			position = 0;
+		} else if (position < _ids.length - 1) {
+			position++;
+		}
+		stop();
+		setup();//初始化
+		play();
+	}
+	
+	protected void playLast() {
+		if (position == 0) {
+			position = _ids.length - 1;
+		} else if (position > 0) {
+			position--;
+		}
+		stop();
+		setup();//初始化
+		play();
 	}
 	
 	// 初始化服务
@@ -166,6 +221,12 @@ public class PlayMusicActivity extends Activity{
 	
 	// 截取标题，歌词，歌名
 	private void loadclip() {
+		playTitle = (TextView) this.findViewById(R.id.play_title);
+		playTitle.setText(_titles[position]);
+		
+		playArtist = (TextView) this.findViewById(R.id.play_artist);
+		playArtist.setText(_artists[position]);
+		
 		seekbar.setProgress(0);
 		int pos = _ids[position];
 /*		name.setText(_titles[position]);
@@ -231,14 +292,15 @@ public class PlayMusicActivity extends Activity{
 				seekbar.setMax(duration);// 进度条设置最大值（传总时间）
 				//durationTime.setText(toTime(duration));// 总时间设置转换的函数
 			}
-/*			 else if (action.equals(MUSIC_UPDATE)) {
+			 else if (action.equals(MUSIC_UPDATE)) {
 				position = intent.getExtras().getInt("position");
 				setup();
-			}*/
-			/* else if (action.equals(MUSIC_NEXT)) {
+			}
+			 else if (action.equals(MUSIC_NEXT)) {
 				System.out.println("音乐继续播放下一首");
-				nextOne();
-*/
+				playNext();
+			 }
+
 
 		}
 	};
