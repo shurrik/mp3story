@@ -40,6 +40,8 @@ public class PlayMusicActivity extends Activity{
 	private static final int STATE_PLAY = 1;// 播放状态设为1,表示播放状态
 	private static final int STATE_PAUSE = 2;// 播放状态设为2，表示暂停状态
 	private SeekBar seekbar = null;// 歌曲进度
+	private TextView playTime = null;// 已播放时间
+	private TextView durationTime = null;// 歌曲时间
 	
 	private static final String MUSIC_CURRENT = "com.shurrik.mp3story.currentTime";
 	private static final String MUSIC_DURATION = "com.shurrik.mp3story.duration";
@@ -60,6 +62,9 @@ public class PlayMusicActivity extends Activity{
 		position = bundle.getInt("position");// 音乐播放位置
 		_titles = bundle.getStringArray("_titles");// 音乐播放标题
 		_artists = bundle.getStringArray("_artists");// 传过来的艺术家，歌名一个都不允许遗漏，否则空指针是必须的
+		
+		playTime = (TextView) this.findViewById(R.id.playTime);
+		durationTime = (TextView) this.findViewById(R.id.durationTime);
 		
 		ShowPlayBtn();// 显示或者说监视播放按钮事件
 		showPlayLast();
@@ -270,7 +275,7 @@ public class PlayMusicActivity extends Activity{
 			String action = intent.getAction();
 			if (action.equals(MUSIC_CURRENT)) {
 				currentPosition = intent.getExtras().getInt("currentTime");// 获得当前播放位置
-				//playtime.setText(toTime(currentPosition));// 初始化播放时间
+				playTime.setText(toTime(currentPosition));// 初始化播放时间
 				seekbar.setProgress(currentPosition);// 初始化播放进度位置
 				/*Iterator<Integer> iterator = lrc_map.keySet().iterator();
 				while (iterator.hasNext()) {
@@ -290,7 +295,7 @@ public class PlayMusicActivity extends Activity{
 			} else if (action.equals(MUSIC_DURATION)) {
 				duration = intent.getExtras().getInt("duration");// 获取总时间
 				seekbar.setMax(duration);// 进度条设置最大值（传总时间）
-				//durationTime.setText(toTime(duration));// 总时间设置转换的函数
+				durationTime.setText(toTime(duration));// 总时间设置转换的函数
 			}
 			 else if (action.equals(MUSIC_UPDATE)) {
 				position = intent.getExtras().getInt("position");
@@ -304,4 +309,19 @@ public class PlayMusicActivity extends Activity{
 
 		}
 	};
+	
+	/**
+	 * 时间的转换
+	 * 
+	 * @param time
+	 * @return
+	 */
+	public String toTime(int time) {
+
+		time /= 1000;
+		int minute = time / 60;
+		int second = time % 60;
+		minute %= 60;
+		return String.format("%02d:%02d", minute, second);
+	}
 }

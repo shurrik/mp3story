@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -44,16 +45,17 @@ public class LocalMusicActivity extends Activity{
 	
 	private void showList()
 	{
-		List<Map> data = new ArrayList();
+/*		List<Map> data = new ArrayList();
 		for(int i=0;i<10;i++)
 		{
 			Map map = new HashMap();
 			map.put("index", i);
 			data.add(map);
-		}
+		}*/
 		Cursor cursor = getContentResolver().query(
 				MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, media_info, null,
 				null, MediaStore.Audio.Media.DEFAULT_SORT_ORDER);
+		Log.i("======URI", MediaStore.Audio.Media.EXTERNAL_CONTENT_URI.toString());
 		cursor.moveToFirst();// 将游标移动到初始位置
 		_ids = new int[cursor.getCount()];// 返回INT的一个列
 		_artists = new String[cursor.getCount()];// 返回String的一个列
