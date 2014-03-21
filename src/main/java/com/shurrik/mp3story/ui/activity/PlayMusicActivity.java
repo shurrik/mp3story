@@ -1,5 +1,8 @@
 package com.shurrik.mp3story.ui.activity;
 
+import java.util.Date;
+import java.util.List;
+
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -12,8 +15,11 @@ import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.shurrik.mp3story.R;
+import com.shurrik.mp3story.support.db.DBManager;
+import com.shurrik.mp3story.support.db.PlayLog;
 
 public class PlayMusicActivity extends Activity{
 
@@ -50,6 +56,8 @@ public class PlayMusicActivity extends Activity{
 	
 	private int currentPosition;// 当前播放位置
 	private int duration;// 总时间
+	
+	private DBManager mgr;  
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -70,6 +78,11 @@ public class PlayMusicActivity extends Activity{
 		showPlayLast();
 		showPlayNext();
 		ShowSeekBar();// 进度条
+		
+		//初始化DBManager  
+        mgr = new DBManager(this);  
+        List<PlayLog> logs = mgr.query();
+        Toast.makeText(this, "标题:"+logs.get(logs.size()-1).getTitle(), 3000).show();;
 	}
 	
     //显示各个按钮并做监视
@@ -255,6 +268,8 @@ public class PlayMusicActivity extends Activity{
 		intent.putExtra("op", PLAY);
 		startService(intent);
 
+		PlayLog log = new PlayLog(_titles[position],new Date());
+		mgr.add(log);
 	}
 
 	// 暂停
